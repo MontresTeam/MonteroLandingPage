@@ -2,11 +2,13 @@
   "name": "my-app",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
-  },
+ "scripts": {
+  "dev": "next dev",
+  "build": "next build",
+  "export": "next export",
+  "start": "next start"
+},
+
   "dependencies": {
     "build": "^0.1.4",
     "d3": "^7.9.0",
