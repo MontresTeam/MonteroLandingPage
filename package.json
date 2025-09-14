@@ -2,12 +2,12 @@
   "name": "my-app",
   "version": "0.1.0",
   "private": true,
- "scripts": {
+"scripts": {
   "dev": "next dev",
   "build": "next build",
-  "export": "next export",
   "start": "next start"
 },
+
 
   "dependencies": {
     "build": "^0.1.4",
