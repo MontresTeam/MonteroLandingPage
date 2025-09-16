@@ -5,10 +5,10 @@ import Navbar from "@/components/layout/Navbar";
 import { Mulish } from "next/font/google";
 
 const mulish = Mulish({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"], // choose what you need
-  variable: "--font-mulish",
+  subsets: ['latin'],
+  weight: ['400', '600'], // Regular & SemiBold
 });
+
 
 const inter = Inter({ subsets: ["latin"] });
 const geistSans = Geist({
