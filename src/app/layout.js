@@ -2,7 +2,13 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Inter } from "next/font/google";
 import Navbar from "@/components/layout/Navbar";
+import { Mulish } from "next/font/google";
 
+const mulish = Mulish({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"], // choose what you need
+  variable: "--font-mulish",
+});
 
 const inter = Inter({ subsets: ["latin"] });
 const geistSans = Geist({
@@ -22,7 +28,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+ <html lang="en" className={mulish.variable}>
       <body className={inter.className}>
         <Navbar />
         {children}

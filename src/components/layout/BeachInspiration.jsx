@@ -19,58 +19,62 @@ const beaches = [
   {
     name: "Ibiza Beach",
     description: "White Island, Spain",
-    coordinates: [1.4316, 38.9067], // Corrected: [longitude, latitude] for Ibiza, Spain
+    coordinates: [1.4316, 38.9067],
     image: IbizaBeach,
   },
   {
     name: "Jumeirah Beach",
     description: "Dubai, UAE",
-    coordinates: [55.1375, 25.1413], // Corrected: [longitude, latitude] for Dubai, UAE
+    coordinates: [55.1375, 25.1413],
     image: JumeirahBeach,
   },
   {
     name: "Patong Beach",
     description: "Phuket, Thailand",
-    coordinates: [98.2950, 7.8906], // Corrected: [longitude, latitude] for Phuket, Thailand
+    coordinates: [98.2950, 7.8906],
     image: PatongBeach,
   },
   {
     name: "Bali Beach",
     description: "Island of Gods, Indonesia",
-    coordinates: [115.0920, -8.8072], // Corrected: [longitude, latitude] for Bali, Indonesia
+    coordinates: [115.0920, -8.8072],
     image: BaliBeach,
   },
   {
     name: "Madeira Beach",
     description: "Portugal",
-    coordinates: [-16.9579, 32.7607], // Corrected: [longitude, latitude] for Madeira, Portugal
+    coordinates: [-16.9579, 32.7607],
     image: MadeiraBeach,
   },
   {
     name: "Cuba Cabana Beach",
     description: "Havana, Cuba",
-    coordinates: [-82.3666, 23.1353], // Corrected: [longitude, latitude] for Havana, Cuba
+    coordinates: [-82.3666, 23.1353],
     image: CubaCabanaBeach,
   },
   {
     name: "Miami Beach",
     description: "Florida, USA",
-    coordinates: [-80.1300, 25.7907], // Corrected: [longitude, latitude] for Miami Beach, USA
+    coordinates: [-80.1300, 25.7907],
     image: MiamiBeach,
   },
   {
     name: "Bora Bora Beach",
     description: "French Polynesia",
-    coordinates: [-151.7420, -16.5004], // Corrected: [longitude, latitude] for Bora Bora
+    coordinates: [-151.7420, -16.5004],
     image: BoraBoraBeach,
   },
 ];
 
 const BeachInspiration = () => {
-  const [selected, setSelected] = useState(beaches[0]);
+  const [selected, setSelected] = useState(beaches[0]); // Set first beach as default
+  const [cardPosition, setCardPosition] = useState({ x: 0, y: 0 });
   const [worldData, setWorldData] = useState(null);
+  const [isCardVisible, setIsCardVisible] = useState(true); // Set card visible by default
   const mapRef = useRef();
   const tooltipRef = useRef();
+  const svgRef = useRef();
+  const projectionRef = useRef();
 
   // Load world map data
   useEffect(() => {
@@ -97,11 +101,17 @@ const BeachInspiration = () => {
       .attr("width", width)
       .attr("height", height);
     
+    // Store SVG reference
+    svgRef.current = svg;
+    
     // Create projection
     const projection = d3.geoMercator()
       .scale(width / 6.5)
       .center([0, 20])
       .translate([width / 2, height / 2]);
+    
+    // Store projection reference
+    projectionRef.current = projection;
     
     // Create path generator
     const path = d3.geoPath().projection(projection);
@@ -109,25 +119,14 @@ const BeachInspiration = () => {
     // Convert TopoJSON to GeoJSON
     const countries = topojson.feature(worldData, worldData.objects.countries);
     
-    // Draw countries with the specified blue color
-    svg.append("g")
-      .selectAll("path")
-      .data(countries.features)
-      .enter()
-      .append("path")
-      .attr("d", path)
-      .attr("fill", "#cfe9f5") // Light blue color for land
-      .attr("stroke", "#fff") // White borders
-      .attr("stroke-width", 0.5);
-    
     // Draw ocean background
     svg.append("rect")
       .attr("width", width)
       .attr("height", height)
-      .attr("fill", "#E6F6FF") // Light blue background for ocean
-      .lower(); // Send to back
+      .attr("fill", "#E6F6FF")
+      .lower();
     
-    // Redraw countries on top of ocean
+    // Draw countries with the specified blue color
     svg.append("g")
       .selectAll("path")
       .data(countries.features)
@@ -139,19 +138,23 @@ const BeachInspiration = () => {
       .attr("stroke-width", 0.5);
     
     // Draw beach markers
-    svg.selectAll("circle")
+    const markers = svg.selectAll("circle")
       .data(beaches)
       .enter()
       .append("circle")
       .attr("cx", d => projection(d.coordinates)[0])
       .attr("cy", d => projection(d.coordinates)[1])
       .attr("r", 6)
-      .attr("fill", d => selected.name === d.name ? "#FF6B6B" : "#4ECDC4") // Different colors for selected vs unselected
+      .attr("fill", d => selected && selected.name === d.name ? "#FF6B6B" : "#4ECDC4")
       .attr("stroke", "white")
       .attr("stroke-width", 2)
       .style("cursor", "pointer")
       .on("click", (event, d) => {
+        // Calculate position for the card
+        const [x, y] = projection(d.coordinates);
+        setCardPosition({ x, y });
         setSelected(d);
+        setIsCardVisible(true);
       })
       .on("mouseover", (event, d) => {
         // Show tooltip
@@ -176,14 +179,51 @@ const BeachInspiration = () => {
     
     svg.call(zoom);
     
-  }, [worldData, selected]);
+    // Set initial card position for the default selected beach
+    if (selected) {
+      const [x, y] = projection(selected.coordinates);
+      setCardPosition({ x, y });
+    }
+    
+  }, [worldData]);
+
+  // Update marker colors when selected beach changes
+  useEffect(() => {
+    if (!svgRef.current) return;
+    
+    svgRef.current.selectAll("circle")
+      .attr("fill", d => selected && selected.name === d.name ? "#FF6B6B" : "#4ECDC4");
+  }, [selected]);
+
+  // Handle zoom changes to update card position
+  useEffect(() => {
+    if (!selected || !projectionRef.current) return;
+    
+    const updateCardPosition = () => {
+      const [x, y] = projectionRef.current(selected.coordinates);
+      setCardPosition({ x, y });
+    };
+    
+    // Update position when zooming/panning
+    if (svgRef.current) {
+      svgRef.current.on("zoom", updateCardPosition);
+    }
+    
+    return () => {
+      if (svgRef.current) {
+        svgRef.current.on("zoom", null);
+      }
+    };
+  }, [selected]);
 
   return (
     <div className="flex flex-col items-center bg-[#E6F6FF] min-h-screen p-6">
       {/* Heading */}
-      <h2 className="text-gray-700 text-xl font-medium mb-4 border-b pb-2 w-full text-center">
-        Inspired by 8 Iconic Beaches Around the World
-      </h2>
+      <div className="w-full max-w-6xl mb-4">
+        <h2 className="text-gray-700 text-xl font-medium pb-2 border-b w-full text-center">
+          Inspired by 8 Iconic Beaches Around the World
+        </h2>
+      </div>
 
       <div className="relative w-full max-w-6xl">
         {/* World Map Container */}
@@ -195,9 +235,17 @@ const BeachInspiration = () => {
           className="absolute bg-white px-3 py-1 rounded shadow-md text-sm pointer-events-none opacity-0 transition-opacity"
         ></div>
 
-        {/* Floating Info Card */}
-        {selected && (
-          <div className="absolute top-4 right-4 bg-white rounded-xl shadow-lg p-4 w-72">
+        {/* Beach Card - positioned at marker */}
+        {selected && isCardVisible && (
+          <div 
+            className="absolute bg-white rounded-xl shadow-lg p-4 w-72 transition-all duration-300"
+            style={{
+              left: `${cardPosition.x}px`,
+              top: `${cardPosition.y}px`,
+              transform: 'translate(-50%, -100%) translateY(-15px)',
+              zIndex: 10
+            }}
+          >
             <Image
               src={selected.image}
               alt={selected.name}
@@ -211,32 +259,6 @@ const BeachInspiration = () => {
             </div>
           </div>
         )}
-      </div>
-      
-      {/* Beach Selection Grid */}
-      <div className="mt-8 w-full max-w-6xl">
-        <h3 className="text-lg font-medium text-gray-700 mb-4">Select a Beach</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {beaches.map(beach => (
-            <div 
-              key={beach.name}
-              className={`p-3 rounded-lg cursor-pointer transition-all ${
-                selected.name === beach.name ? 'bg-blue-100 border-2 border-blue-400' : 'bg-white hover:bg-gray-50'
-              }`}
-              onClick={() => setSelected(beach)}
-            >
-              <Image
-                src={beach.image} 
-                alt={beach.name}
-                width={200}
-                height={96}
-                className="w-full h-24 object-cover rounded-md"
-              />
-              <p className="text-sm font-medium mt-2">{beach.name}</p>
-              <p className="text-xs text-gray-500">{beach.description}</p>
-            </div>
-          ))}
-        </div>
       </div>
     </div>
   );
