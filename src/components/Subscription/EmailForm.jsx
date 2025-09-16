@@ -5,7 +5,7 @@ import axios from "axios";
 import Image from "next/image";
 import giftBanner from "../../../public/images/features/SubscriptionBanner.jpg"; // replace with your image
 
-// ✅ Modal styles
+// ✅ Responsive Modal styles
 const customStyles = {
   content: {
     top: "50%",
@@ -14,7 +14,7 @@ const customStyles = {
     bottom: "auto",
     marginRight: "-50%",
     transform: "translate(-50%, -50%)",
-    width: "100%",
+    width: "90%", // Changed from 100% to 90% for mobile
     maxWidth: "720px",
     maxHeight: "90vh",
     padding: 0,
@@ -26,7 +26,25 @@ const customStyles = {
   overlay: {
     backgroundColor: "rgba(0, 0, 0, 0.7)",
     zIndex: 1000,
+    padding: "16px", // Added padding for mobile safety
   },
+};
+
+// Responsive styles for different screen sizes
+const responsiveStyles = {
+  mobile: {
+    content: {
+      width: "95%",
+      maxWidth: "400px",
+      margin: "0 10px",
+    }
+  },
+  tablet: {
+    content: {
+      width: "90%",
+      maxWidth: "600px",
+    }
+  }
 };
 
 export default function EmailForm({ isOpen, onRequestClose }) {
@@ -35,6 +53,34 @@ export default function EmailForm({ isOpen, onRequestClose }) {
   const [agree, setAgree] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
+
+  // Update modal styles based on window size
+  const [windowWidth, setWindowWidth] = useState(0);
+  React.useEffect(() => {
+    // Only run in browser environment
+    if (typeof window !== "undefined") {
+      setWindowWidth(window.innerWidth);
+      const handleResize = () => setWindowWidth(window.innerWidth);
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }
+  }, []);
+
+  // Apply responsive styles
+  const getResponsiveStyle = () => {
+    if (windowWidth < 768) {
+      return {
+        ...customStyles,
+        content: { ...customStyles.content, ...responsiveStyles.mobile.content }
+      };
+    } else if (windowWidth < 1024) {
+      return {
+        ...customStyles,
+        content: { ...customStyles.content, ...responsiveStyles.tablet.content }
+      };
+    }
+    return customStyles;
+  };
 
   const emailIsValid = (e) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(e).toLowerCase().trim());
@@ -86,44 +132,46 @@ export default function EmailForm({ isOpen, onRequestClose }) {
     <Modal
       isOpen={isOpen}
       onRequestClose={onRequestClose}
-      style={customStyles}
+      style={getResponsiveStyle()}
       contentLabel="Subscribe Form"
       ariaHideApp={false}
+      className="fixed overflow-auto"
     >
-      <div className="w-full bg-white grid grid-cols-1 md:grid-cols-2">
-        {/* Left Banner (Image) */}
-        <div className="bg-gray-100 flex items-center justify-center p-6">
+      <div className="w-full bg-white flex flex-col md:flex-row">
+        {/* Left Banner (Image) - Hidden on mobile, visible on tablet and up */}
+        <div className="hidden md:flex md:w-2/5 bg-gray-100 items-center justify-center p-4">
           <Image
             src={giftBanner}
             alt="Subscribe Gift"
-            className="w-40 h-40 object-contain"
+            className="w-full h-auto max-h-64 object-contain"
+            priority
           />
         </div>
 
         {/* Right Form */}
-        <div className="p-6 sm:p-8 flex flex-col justify-center relative">
+        <div className="w-full md:w-3/5 p-4 sm:p-6 flex flex-col justify-center relative">
           {/* Close button */}
           <button
             onClick={onRequestClose}
-            className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+            className="absolute top-2 right-2 sm:top-3 sm:right-3 text-gray-500 hover:text-gray-700 text-xl sm:text-2xl p-1"
             aria-label="Close"
           >
             ✕
           </button>
 
-          <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
+          <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2 sm:mb-3">
             Be the first to know when our Kickstarter launches
           </h3>
-          <p className="text-lg text-gray-600 mb-6">Coming soon</p>
+          <p className="text-base sm:text-lg text-gray-600 mb-4 sm:mb-6">Coming soon</p>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
             <input
               type="text"
               placeholder="Your name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500"
+              className="w-full border border-gray-300 rounded-md px-4 py-2 sm:py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 text-base"
               required
             />
             <input
@@ -131,23 +179,23 @@ export default function EmailForm({ isOpen, onRequestClose }) {
               placeholder="Your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500"
+              className="w-full border border-gray-300 rounded-md px-4 py-2 sm:py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 text-base"
               required
             />
 
-            <label className="flex items-center gap-2 text-sm text-gray-700">
+            <label className="flex items-start gap-2 text-xs sm:text-sm text-gray-700">
               <input
                 type="checkbox"
                 checked={agree}
                 onChange={(e) => setAgree(e.target.checked)}
-                className="w-4 h-4"
+                className="w-4 h-4 mt-0.5 flex-shrink-0"
               />
               <span>I agree to receive marketing material</span>
             </label>
 
             <button
               type="submit"
-              className="w-full bg-green-600 hover:bg-green-700 text-white  font-semibold px-6 py-3 rounded-md shadow transition disabled:opacity-60"
+              className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 sm:py-3 rounded-md shadow transition disabled:opacity-60 text-base sm:text-lg"
               disabled={loading}
             >
               {loading ? "Subscribing..." : "Subscribe"}
@@ -158,7 +206,7 @@ export default function EmailForm({ isOpen, onRequestClose }) {
               <div
                 className={`text-sm ${
                   message.type === "success" ? "text-green-600" : "text-red-600"
-                }`}
+                } py-2`}
               >
                 {message.text}
               </div>

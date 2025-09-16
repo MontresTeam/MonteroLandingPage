@@ -36,7 +36,7 @@ const CountDown = () => {
 
   return (
     <div
-      className="relative min-h-screen flex flex-col items-center justify-start text-center px-4 pt-8 md:pt-12 overflow-hidden"
+      className="relative min-h-screen flex flex-col items-center justify-start text-center px-4 pt-6 md:pt-8 lg:pt-12 overflow-hidden"
       style={{
         backgroundImage: `url(${backgroundImage.src})`,
         backgroundSize: "cover",
@@ -46,22 +46,22 @@ const CountDown = () => {
       {/* White overlay for soft effect */}
       <div className="absolute inset-0 bg-white opacity-70"></div>
 
-      {/* === Blurred Watch Background === */}
-      <div className="absolute top-[55%] left-1/2 -translate-x-1/2 w-[100%] h-[100%] z-0 opacity-80">
+      {/* Blurred Watch Background - Responsive positioning */}
+      <div className="absolute top-[50%] md:top-[55%] left-1/2 -translate-x-1/2 w-full h-[70%] md:h-[80%] lg:h-[90%] z-0 opacity-80">
         <Image
           src={watchImage}
           alt="Blurred Watch"
           fill
-          className="object-contain " // strong blur like Figma
+          className="object-contain"
           priority
         />
       </div>
 
       {/* Content */}
-      <div className="relative z-10 w-full max-w-4xl mx-auto">
+      <div className="relative z-10 w-full max-w-4xl mx-auto px-2 sm:px-4">
         {/* Logo */}
-        <div className="w-40 md:w-56 mx-auto mb-4 md:mb-6">
-          <div className="relative w-full h-24 md:h-32">
+        <div className="w-32 sm:w-40 md:w-48 lg:w-56 mx-auto mb-3 md:mb-4 lg:mb-6">
+          <div className="relative w-full h-16 sm:h-20 md:h-24 lg:h-32">
             <Image
               src={logoImage}
               alt="Montero Logo"
@@ -73,24 +73,24 @@ const CountDown = () => {
         </div>
 
         {/* Heading */}
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-900">
+        <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-900 px-2">
           Made With Swiss Technology
         </h2>
-        <p className="mt-3 md:mt-4 text-gray-600 max-w-2xl mx-auto leading-relaxed text-sm md:text-base">
+        <p className="mt-2 sm:mt-3 md:mt-4 text-gray-600 max-w-2xl mx-auto leading-relaxed text-xs sm:text-sm md:text-base px-2 sm:px-4">
           Praesent sagittis orci hendrerit dui fermentum, viverra sodales odio
           euismod. Curabitur viverra, sapien a rutrum vehicula, felis purus
           scelerisque massa, sit amet consequat nibh libero quis dui.
         </p>
 
         {/* Buy Now Button */}
-        <div className="mt-4 md:mt-6">
-          <button className="bg-green-700 text-white px-5 py-2 md:px-6 md:py-2 rounded-md hover:bg-green-800 transition text-sm md:text-base">
+        <div className="mt-3 md:mt-4 lg:mt-6">
+          <button className="bg-green-700 text-white px-4 py-1.5 sm:px-5 sm:py-2 md:px-6 md:py-2 rounded-md hover:bg-green-800 transition text-xs sm:text-sm md:text-base">
             Buy Now
           </button>
         </div>
 
         {/* Sub-heading */}
-        <p className="mt-4 md:mt-6 text-xs md:text-sm text-gray-700">
+        <p className="mt-3 md:mt-4 lg:mt-6 text-xs md:text-sm text-gray-700">
           <span className="border-l-4 border-blue-600 pl-2">
             Launching September 2025
           </span>{" "}
@@ -98,7 +98,7 @@ const CountDown = () => {
         </p>
 
         {/* Countdown Timer */}
-        <div className="mt-6 md:mt-8 flex flex-wrap justify-center gap-3 md:gap-4 lg:gap-6">
+        <div className="mt-4 md:mt-6 lg:mt-8 flex flex-wrap justify-center gap-2 sm:gap-3 md:gap-4 lg:gap-6">
           {[
             { label: "Days", value: timeLeft.days },
             { label: "Hours", value: timeLeft.hours },
@@ -107,12 +107,12 @@ const CountDown = () => {
           ].map((item, index) => (
             <div
               key={index}
-              className="bg-white/90 backdrop-blur-sm border border-blue-200 rounded-lg shadow-md w-16 md:w-20 lg:w-24 py-3 md:py-4"
+              className="bg-white/90 backdrop-blur-sm border border-blue-200 rounded-lg shadow-md w-14 sm:w-16 md:w-18 lg:w-24 py-2 sm:py-3 md:py-4"
             >
-              <div className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">
+              <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">
                 {item.value.toString().padStart(2, "0")}
               </div>
-              <div className="text-gray-600 text-xs md:text-sm mt-1">
+              <div className="text-gray-600 text-xs sm:text-xs md:text-sm mt-1">
                 {item.label}
               </div>
             </div>
@@ -120,7 +120,7 @@ const CountDown = () => {
         </div>
 
         {/* Description */}
-        <p className="relative z-10 mt-8 md:mt-12 lg:mt-16 text-gray-700 max-w-2xl mx-auto text-xs md:text-sm lg:text-base leading-relaxed">
+        <p className="relative z-10 mt-6 md:mt-8 lg:mt-12 text-gray-700 max-w-2xl mx-auto text-xs sm:text-sm md:text-base leading-relaxed px-2 sm:px-4">
           Discover the elegance of time with Montero – where precision
           engineering meets exquisite craftsmanship. Our inaugural collection
           redefines luxury watchmaking with Swiss movements, premium materials,
@@ -129,11 +129,11 @@ const CountDown = () => {
         </p>
 
         {/* Action Buttons */}
-        <div className="mt-4 md:mt-6 flex flex-col sm:flex-row justify-center gap-3 md:gap-4">
-          <button className="bg-green-700 text-white px-5 py-2 md:px-6 md:py-2 rounded-md hover:bg-green-800 transition text-sm md:text-base">
+        <div className="mt-4 md:mt-6 flex flex-col sm:flex-row justify-center gap-2 sm:gap-3 md:gap-4">
+          <button className="bg-green-700 text-white px-4 py-1.5 sm:px-5 sm:py-2 md:px-6 md:py-2 rounded-md hover:bg-green-800 transition text-xs sm:text-sm md:text-base">
             Notify Me on Launch
           </button>
-          <button className="border border-gray-400 px-5 py-2 md:px-6 md:py-2 rounded-md hover:bg-gray-100 transition text-sm md:text-base">
+          <button className="border border-gray-400 px-4 py-1.5 sm:px-5 sm:py-2 md:px-6 md:py-2 rounded-md hover:bg-gray-100 transition text-xs sm:text-sm md:text-base mt-2 sm:mt-0">
             Reserve Your Watch
           </button>
         </div>

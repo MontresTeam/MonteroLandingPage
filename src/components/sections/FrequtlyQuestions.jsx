@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { FiFileText, FiMessageCircle } from "react-icons/fi"; // import icons at top
+import { FiFileText, FiMessageCircle } from "react-icons/fi";
 
 const faqs = [
   {
@@ -14,7 +14,7 @@ const faqs = [
     id: 2,
     question: "When will I receive my watch?",
     answer:
-      "We plan to ship all Montero watches within 2 months after the Kickstarter campaign ends. You’ll receive regular email updates throughout the process.",
+      "We plan to ship all Montero watches within 2 months after the Kickstarter campaign ends. You'll receive regular email updates throughout the process.",
   },
   {
     id: 3,
@@ -46,132 +46,77 @@ const FrequentlyQuestions = () => {
   const [openId, setOpenId] = useState(null);
 
   const toggleFaq = (id) => {
-    setOpenId(openId === id ? null : id); // only one open at a time
+    setOpenId(openId === id ? null : id);
   };
 
-  // Split FAQs into two groups
-  const leftColumn = faqs.slice(0, 3);
-  const rightColumn = faqs.slice(3);
-
   return (
-    <section className="bg-[#E6F6FD] min-h-screen flex items-center justify-center py-12 px-4">
+    <section className="bg-[#E6F6FD] min-h-screen flex items-center justify-center py-8 px-4 sm:py-12">
       <div className="max-w-6xl w-full">
         {/* Header */}
-        <div className="text-center mb-10">
-          <h2
-            className="text-gray-900 text-center"
-            style={{
-              fontFamily: "Mulish, sans-serif",
-              fontWeight: 600, // SemiBold
-              fontSize: "48px",
-              lineHeight: "56px",
-              letterSpacing: "-0.03em", // -3%
-            }}
-          >
+        <div className="text-center mb-8 sm:mb-10">
+          <h2 className="text-gray-900 text-center font-semibold text-3xl sm:text-4xl md:text-[48px] leading-tight md:leading-[56px] tracking-tight mb-4">
             Frequently Asked Questions
           </h2>
-          <p
-            className="text-gray-600 text-center"
-            style={{
-              fontFamily: "Mulish, sans-serif",
-              fontWeight: 400, // Regular
-              fontSize: "16px",
-              lineHeight: "28px",
-              letterSpacing: "-0.02em", // -2%
-              textAlign: "center",
-            }}
-          >
+          <p className="text-gray-600 text-center text-base sm:text-lg leading-7 max-w-2xl mx-auto">
             Here are some of our FAQs. If you have any other questions you'd
             like answered please feel free to email us.
           </p>
         </div>
 
-        {/* FAQ Two-Column Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Left Column */}
-          <div className="flex flex-col gap-4">
-            {leftColumn.map((faq) => (
-              <div
-                key={faq.id}
-                className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden transition-all duration-300"
+        {/* FAQ Accordion - Single column on mobile, two columns on larger screens */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+          {faqs.map((faq, index) => (
+            <div
+              key={faq.id}
+              className={`bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 ${
+                index >= 3 ? "md:mt-10" : ""
+              }`}
+            >
+              {/* Question */}
+              <button
+                onClick={() => toggleFaq(faq.id)}
+                className="w-full flex justify-between items-center px-4 py-3 sm:px-6 sm:py-4 text-left font-medium text-gray-900 hover:bg-gray-50 transition"
+                aria-expanded={openId === faq.id}
               >
-                {/* Question */}
-                <button
-                  onClick={() => toggleFaq(faq.id)}
-                  className="w-full flex justify-between items-center px-4 py-3 text-left font-medium text-gray-900 hover:bg-gray-50 transition"
-                >
-                  {faq.question}
-                  <span className="text-xl">
-                    {openId === faq.id ? "−" : "+"}
-                  </span>
-                </button>
+                <span className="text-sm sm:text-base pr-2">{faq.question}</span>
+                <span className="text-xl flex-shrink-0">
+                  {openId === faq.id ? "−" : "+"}
+                </span>
+              </button>
 
-                {/* Answer */}
-                <div
-                  className={`transition-all duration-300 overflow-hidden ${
-                    openId === faq.id
-                      ? "max-h-[1000px] px-4 pb-4"
-                      : "max-h-0 px-4"
-                  }`}
-                >
-                  <p className="text-gray-600 text-sm">{faq.answer}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Right Column */}
-          <div className="flex flex-col gap-4">
-            {rightColumn.map((faq) => (
+              {/* Answer */}
               <div
-                key={faq.id}
-                className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden transition-all duration-300"
+                className={`transition-all duration-300 overflow-hidden ${
+                  openId === faq.id
+                    ? "max-h-[500px] px-4 sm:px-6 pb-4"
+                    : "max-h-0"
+                }`}
               >
-                {/* Question */}
-                <button
-                  onClick={() => toggleFaq(faq.id)}
-                  className="w-full flex justify-between items-center px-4 py-3 text-left font-medium text-gray-900 hover:bg-gray-50 transition"
-                >
-                  {faq.question}
-                  <span className="text-xl">
-                    {openId === faq.id ? "−" : "+"}
-                  </span>
-                </button>
-
-                {/* Answer */}
-                <div
-                  className={`transition-all duration-300 overflow-hidden ${
-                    openId === faq.id
-                      ? "max-h-[1000px] px-4 pb-4"
-                      : "max-h-0 px-4"
-                  }`}
-                >
-                  <p className="text-gray-600 text-sm">{faq.answer}</p>
-                </div>
+                <p className="text-gray-600 text-sm sm:text-base pt-2">{faq.answer}</p>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
 
         {/* Footer */}
-        <div className="flex flex-col md:flex-row justify-center items-center mt-8 gap-2 md:gap-8 text-gray-600 text-sm w-[700px] h-[28px] mx-auto text-center">
-          <span>More questions? Visit our </span>
-
+        <div className="flex flex-col sm:flex-row justify-center items-center mt-8 gap-2 sm:gap-3 text-gray-600 text-sm text-center">
+          <span>More questions? Visit our</span>
+          
           <a
             href="#"
-            className="flex items-center gap-2 text-blue-500 hover:underline font-medium"
+            className="flex items-center gap-1 sm:gap-2 text-blue-500 hover:underline font-medium px-1"
           >
-            <FiFileText size={20} /> {/* Docs icon */}
+            <FiFileText size={18} />
             <span>docs</span>
           </a>
-
-          <span> or </span>
-
+          
+          <span>or</span>
+          
           <a
             href="#"
-            className="flex items-center gap-2 text-blue-500 hover:underline font-medium"
+            className="flex items-center gap-1 sm:gap-2 text-blue-500 hover:underline font-medium px-1"
           >
-            <FiMessageCircle size={20} /> {/* Send message icon */}
+            <FiMessageCircle size={18} />
             <span>send us a message</span>
           </a>
         </div>

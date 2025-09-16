@@ -28,19 +28,19 @@ const Navbar = () => {
 
   return (
     <nav 
-      className={`w-full fixed top-0 left-0 z-50 py-3 transition-all duration-300 ${
+      className={`w-full fixed top-0 left-0 z-50 py-2 sm:py-3 transition-all duration-300 ${
         scrolled ? "bg-black/90 backdrop-blur-md shadow-lg" : "bg-transparent"
       }`}
     >
-       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6">
-        {/* Logo - Made larger */}
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6">
+        {/* Logo - Responsive sizing */}
         <div className="flex-shrink-0 z-60">
           <Image
             src={logo}
             alt="Montero Logo"
             width={280}
             height={280}
-            className="object-contain w-40 sm:w-48 md:w-52 h-auto"
+            className="object-contain w-32 xs:w-36 sm:w-40 md:w-48 lg:w-52 h-auto"
             priority
           />
         </div>
@@ -54,7 +54,7 @@ const Navbar = () => {
                 key={link.key}
                 href={link.href}
                 onClick={() => setActive(link.key)}
-                className={`px-3 py-2 lg:px-4 lg:py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                className={`px-3 py-2 lg:px-4 lg:py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 ${
                   active === link.key
                     ? "bg-white text-black shadow-lg"
                     : "text-white hover:bg-white/20"
@@ -66,7 +66,7 @@ const Navbar = () => {
           </div>
 
           {/* Pre-order button */}
-          <button className="ml-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 lg:px-5 lg:py-2 rounded-full text-sm font-medium transition-colors duration-200 shadow-md hover:shadow-lg">
+          <button className="ml-2 bg-green-600 hover:bg-green-700 text-white px-3 py-2 lg:px-4 lg:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors duration-200 shadow-md hover:shadow-lg">
             Pre-Order Now
           </button>
         </div>
@@ -79,9 +79,9 @@ const Navbar = () => {
             aria-label="Toggle menu"
           >
             {isOpen ? (
-              <FiX className="w-6 h-6" />
+              <FiX className="w-5 h-5 sm:w-6 sm:h-6" />
             ) : (
-              <FiMenu className="w-6 h-6" />
+              <FiMenu className="w-5 h-5 sm:w-6 sm:h-6" />
             )}
           </button>
         </div>
@@ -101,8 +101,8 @@ const Navbar = () => {
             }`}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="pt-20 px-6 flex flex-col h-full">
-              <div className="space-y-6">
+            <div className="pt-24 px-6 flex flex-col h-full">
+              <div className="space-y-4">
                 {links.map((link) => (
                   <a
                     key={link.key}
@@ -111,7 +111,7 @@ const Navbar = () => {
                       setActive(link.key);
                       setIsOpen(false);
                     }}
-                    className={`block px-6 py-4 rounded-xl text-lg font-medium transition-all duration-200 ${
+                    className={`block px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 ${
                       active === link.key
                         ? "bg-white text-black shadow-lg"
                         : "text-white hover:bg-white/10"
@@ -122,7 +122,7 @@ const Navbar = () => {
                 ))}
               </div>
 
-              <button className="mt-10 w-full bg-green-600 hover:bg-green-700 text-white px-5 py-4 rounded-xl text-lg font-medium transition-colors duration-200 shadow-md">
+              <button className="mt-8 w-full bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-xl text-base font-medium transition-colors duration-200 shadow-md">
                 Pre-Order Now
               </button>
             </div>
