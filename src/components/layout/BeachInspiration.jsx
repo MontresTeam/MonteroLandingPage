@@ -319,31 +319,7 @@ const BeachInspiration = () => {
         )}
 
         {/* Beach selector for mobile */}
-        {windowSize.width < 768 && (
-          <div className="mt-4 w-full">
-            <select 
-              className="w-full p-2 rounded-lg border border-gray-300 bg-white"
-              value={beaches.findIndex(b => b.name === selected.name)}
-              onChange={(e) => {
-                const beach = beaches[parseInt(e.target.value)];
-                setSelected(beach);
-                setIsCardVisible(true);
-                
-                // Update card position
-                if (projectionRef.current) {
-                  const [x, y] = projectionRef.current(beach.coordinates);
-                  setCardPosition({ x, y });
-                }
-              }}
-            >
-              {beaches.map((beach, index) => (
-                <option key={beach.name} value={index}>
-                  {beach.name} - {beach.description}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+       
       </div>
     </div>
   );
