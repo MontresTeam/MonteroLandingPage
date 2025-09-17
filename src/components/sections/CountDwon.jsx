@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import EmailForm from "../../components/Subscription/EmailForm";
 
 // Import assets
 import backgroundImage from "../../../public/images/features/dadc1242966739c83da15f89dcf7d1177f527bf3.png";
@@ -15,6 +16,10 @@ const CountDown = () => {
     minutes: 0,
     seconds: 0,
   });
+  
+  // Modal state
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [modalType, setModalType] = useState("");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -34,6 +39,17 @@ const CountDown = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Modal functions
+  const openModal = (type) => {
+    setModalType(type);
+    setModalIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalIsOpen(false);
+    setModalType("");
+  };
+
   return (
     <div
       className="relative min-h-screen flex flex-col items-center justify-start text-center px-4 pt-8 md:pt-12 overflow-hidden"
@@ -52,7 +68,7 @@ const CountDown = () => {
           src={watchImage}
           alt="Blurred Watch"
           fill
-          className="object-contain " // strong blur like Figma
+          className="object-contain"
           priority
         />
       </div>
@@ -84,7 +100,10 @@ const CountDown = () => {
 
         {/* Buy Now Button */}
         <div className="mt-4 md:mt-6">
-          <button className="bg-green-700 text-white px-5 py-2 md:px-6 md:py-2 rounded-md hover:bg-green-800 transition text-sm md:text-base">
+          <button 
+            className="bg-green-700 text-white px-5 py-2 md:px-6 md:py-2 rounded-md hover:bg-green-800 transition text-sm md:text-base"
+            onClick={() => openModal("buy")}
+          >
             Buy Now
           </button>
         </div>
@@ -130,14 +149,27 @@ const CountDown = () => {
 
         {/* Action Buttons */}
         <div className="mt-4 md:mt-6 flex flex-col sm:flex-row justify-center gap-3 md:gap-4">
-          <button className="bg-green-700 text-white px-5 py-2 md:px-6 md:py-2 rounded-md hover:bg-green-800 transition text-sm md:text-base">
+          <button 
+            className="bg-green-700 text-white px-5 py-2 md:px-6 md:py-2 rounded-md hover:bg-green-800 transition text-sm md:text-base"
+            onClick={() => openModal("notify")}
+          >
             Notify Me on Launch
           </button>
-          <button className="border border-gray-400 px-5 py-2 md:px-6 md:py-2 rounded-md hover:bg-gray-100 transition text-sm md:text-base">
+          <button 
+            className="border border-gray-400 px-5 py-2 md:px-6 md:py-2 rounded-md hover:bg-gray-100 transition text-sm md:text-base"
+            onClick={() => openModal("reserve")}
+          >
             Reserve Your Watch
           </button>
         </div>
       </div>
+      
+      {/* Email Form Modal */}
+      <EmailForm
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        modalType={modalType}
+      />
     </div>
   );
 };

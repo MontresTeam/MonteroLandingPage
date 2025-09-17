@@ -3,116 +3,69 @@ import React, { useState } from "react";
 import Modal from "react-modal";
 import axios from "axios";
 import Image from "next/image";
-import giftBanner from "../../../public/images/features/SubscriptionBanner.jpg"; // replace with your image
+import giftBanner from "../../../public/images/features/SubscriptionBanner.jpg";
 
-// ✅ Responsive Modal styles
+// ✅ Modal Base Styles
 const customStyles = {
   content: {
     top: "50%",
     left: "50%",
     right: "auto",
     bottom: "auto",
-    marginRight: "-50%",
     transform: "translate(-50%, -50%)",
-    width: "90%", // Changed from 100% to 90% for mobile
-    maxWidth: "720px",
-    maxHeight: "90vh",
+    width: "95%",
+    maxWidth: "700px",
     padding: 0,
     border: "none",
-    borderRadius: "12px",
+    borderRadius: "16px",
     overflow: "hidden",
-    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+    boxShadow: "0 20px 40px rgba(0, 0, 0, 0.4)",
   },
   overlay: {
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    backgroundColor: "rgba(0, 0, 0, 0.75)",
     zIndex: 1000,
-    padding: "16px", // Added padding for mobile safety
+    padding: "12px",
   },
 };
 
-// Responsive styles for different screen sizes
-const responsiveStyles = {
-  mobile: {
-    content: {
-      width: "95%",
-      maxWidth: "400px",
-      margin: "0 10px",
-    }
-  },
-  tablet: {
-    content: {
-      width: "90%",
-      maxWidth: "600px",
-    }
-  }
-};
-
-export default function EmailForm({ isOpen, onRequestClose }) {
-  const [name, setName] = useState("");
+export default function SubscriptionForm({ isOpen, onRequestClose }) {
+  const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [agree, setAgree] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
+  const [subscribed, setSubscribed] = useState(false);
 
-  // Update modal styles based on window size
-  const [windowWidth, setWindowWidth] = useState(0);
-  React.useEffect(() => {
-    // Only run in browser environment
-    if (typeof window !== "undefined") {
-      setWindowWidth(window.innerWidth);
-      const handleResize = () => setWindowWidth(window.innerWidth);
-      window.addEventListener("resize", handleResize);
-      return () => window.removeEventListener("resize", handleResize);
-    }
-  }, []);
-
-  // Apply responsive styles
-  const getResponsiveStyle = () => {
-    if (windowWidth < 768) {
-      return {
-        ...customStyles,
-        content: { ...customStyles.content, ...responsiveStyles.mobile.content }
-      };
-    } else if (windowWidth < 1024) {
-      return {
-        ...customStyles,
-        content: { ...customStyles.content, ...responsiveStyles.tablet.content }
-      };
-    }
-    return customStyles;
-  };
-
+  // ✅ Email validation
   const emailIsValid = (e) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(e).toLowerCase().trim());
 
+  // ✅ Handle Submit
   const handleSubmit = async (ev) => {
     ev.preventDefault();
     setMessage(null);
 
-    if (!name || !email || !emailIsValid(email)) {
-      setMessage({ type: "error", text: "Please fill all fields correctly." });
+    if (!email || !emailIsValid(email)) {
+      setMessage({ type: "error", text: "Enter a valid email address." });
       return;
     }
 
     if (!agree) {
-      setMessage({ type: "error", text: "You must agree to proceed." });
+      setMessage({ type: "error", text: "Please agree to marketing consent." });
       return;
     }
 
     setLoading(true);
     try {
       const res = await axios.post("/api/subscribe", {
-        name,
+        firstName,
         email: email.trim(),
         agree,
       });
 
       if (res?.data?.success) {
-        setMessage({
-          type: "success",
-          text: res.data.message || "Subscribed successfully!",
-        });
-        setName("");
+        setSubscribed(true);
+        setFirstName("");
         setEmail("");
         setAgree(false);
       } else {
@@ -132,86 +85,110 @@ export default function EmailForm({ isOpen, onRequestClose }) {
     <Modal
       isOpen={isOpen}
       onRequestClose={onRequestClose}
-      style={getResponsiveStyle()}
+      style={customStyles}
       contentLabel="Subscribe Form"
       ariaHideApp={false}
-      className="fixed overflow-auto"
     >
       <div className="w-full bg-white flex flex-col md:flex-row">
-        {/* Left Banner (Image) - Hidden on mobile, visible on tablet and up */}
+        {/* ✅ Left Side Image */}
         <div className="hidden md:flex md:w-2/5 bg-gray-100 items-center justify-center p-4">
           <Image
             src={giftBanner}
-            alt="Subscribe Gift"
-            className="w-full h-auto max-h-64 object-contain"
+            alt="Montero Watch Subscription"
+            className="w-full h-auto object-contain rounded-lg"
             priority
           />
         </div>
 
-        {/* Right Form */}
-        <div className="w-full md:w-3/5 p-4 sm:p-6 flex flex-col justify-center relative">
-          {/* Close button */}
+        {/* ✅ Right Side Content */}
+        <div className="w-full md:w-3/5 p-6 sm:p-8 flex flex-col justify-center relative">
+          {/* Close Button */}
           <button
             onClick={onRequestClose}
-            className="absolute top-2 right-2 sm:top-3 sm:right-3 text-gray-500 hover:text-gray-700 text-xl sm:text-2xl p-1"
+            className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-2xl p-1"
             aria-label="Close"
           >
             ✕
           </button>
 
-          <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2 sm:mb-3">
-            Be the first to know when our Kickstarter launches
-          </h3>
-          <p className="text-base sm:text-lg text-gray-600 mb-4 sm:mb-6">Coming soon</p>
+          {!subscribed ? (
+            <>
+              {/* Heading */}
+              <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                Be the First to Know
+              </h3>
+              <p className="text-gray-600 mb-6 text-sm sm:text-base">
+                Subscribe for early access to the{" "}
+                <span className="font-semibold">Montero Watch Kickstarter</span>{" "}
+                launch and exclusive offers.
+              </p>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
-            <input
-              type="text"
-              placeholder="Your name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-4 py-2 sm:py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 text-base"
-              required
-            />
-            <input
-              type="email"
-              placeholder="Your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-4 py-2 sm:py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 text-base"
-              required
-            />
+              {/* Form */}
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <input
+                  type="text"
+                  placeholder="First name (optional)"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  className="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 text-base"
+                />
+                <input
+                  type="email"
+                  placeholder="Your email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 text-base"
+                  required
+                />
 
-            <label className="flex items-start gap-2 text-xs sm:text-sm text-gray-700">
-              <input
-                type="checkbox"
-                checked={agree}
-                onChange={(e) => setAgree(e.target.checked)}
-                className="w-4 h-4 mt-0.5 flex-shrink-0"
-              />
-              <span>I agree to receive marketing material</span>
-            </label>
+                <label className="flex items-start gap-2 text-sm text-gray-700">
+                  <input
+                    type="checkbox"
+                    checked={agree}
+                    onChange={(e) => setAgree(e.target.checked)}
+                    className="w-4 h-4 mt-0.5 flex-shrink-0"
+                  />
+                  <span>I agree to receive updates and marketing material.</span>
+                </label>
 
-            <button
-              type="submit"
-              className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 sm:py-3 rounded-md shadow transition disabled:opacity-60 text-base sm:text-lg"
-              disabled={loading}
-            >
-              {loading ? "Subscribing..." : "Subscribe"}
-            </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-3 rounded-md shadow transition disabled:opacity-60 text-base"
+                >
+                  {loading ? "Subscribing..." : "Subscribe Now"}
+                </button>
 
-            {/* Feedback */}
-            {message && (
-              <div
-                className={`text-sm ${
-                  message.type === "success" ? "text-green-600" : "text-red-600"
-                } py-2`}
-              >
-                {message.text}
+                {/* Error Message */}
+                {message && (
+                  <div
+                    className={`text-sm mt-2 ${
+                      message.type === "success"
+                        ? "text-green-600"
+                        : "text-red-600"
+                    }`}
+                  >
+                    {message.text}
+                  </div>
+                )}
+              </form>
+            </>
+          ) : (
+            // ✅ Success State
+            <div className="text-center flex flex-col items-center justify-center py-10">
+              <div className="w-16 h-16 bg-teal-100 text-teal-600 flex items-center justify-center rounded-full mb-4 text-3xl">
+                ✓
               </div>
-            )}
-          </form>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                Subscription Confirmed 🎉
+              </h3>
+              <p className="text-gray-600 text-sm sm:text-base">
+                Thank you for subscribing!  
+                You’ll be the first to know when{" "}
+                <span className="font-semibold">Montero Watch</span> launches.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </Modal>
