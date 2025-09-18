@@ -48,7 +48,7 @@ const handleSubmit = async (e) => {
   setLoading(true);
 
   try {
-    const res = await axios.post("http://localhost:8000/api/subscribe", {
+    const res = await axios.post("https://api.monterowatch.com/api/subscribe", {
       email,
       firstName,
     });
