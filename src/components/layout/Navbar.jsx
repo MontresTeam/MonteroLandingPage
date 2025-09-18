@@ -27,27 +27,32 @@ const Navbar = () => {
   ];
 
   return (
-    <nav 
-      className={`w-full fixed top-0 left-0 z-50 py-2 sm:py-3 transition-all duration-300 ${
-        scrolled ? "bg-black/90 backdrop-blur-md shadow-lg" : "bg-transparent"
+    <nav
+      className={`w-full fixed top-0 left-0 z-50 py-2 sm:py-3 transition-all duration-300 
+      ${
+        isOpen
+          ? "bg-transparent shadow-none" // clear background when menu open
+          : scrolled
+          ? "bg-black/90 backdrop-blur-md shadow-lg"
+          : "bg-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6">
-        {/* Logo - Responsive sizing */}
-        <div className="flex-shrink-0 z-60">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 relative">
+        {/* Logo - always visible above overlay */}
+        <div className="flex-shrink-0 relative z-[60] max-w-[200px] w-full">
           <Image
             src={logo}
             alt="Montero Logo"
-            width={280}
-            height={280}
-            className="object-contain w-32 xs:w-36 sm:w-40 md:w-48 lg:w-52 h-auto"
+            width={0}
+            height={0}
+            sizes="100vw"
+            className="w-full h-auto object-contain"
             priority
           />
         </div>
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center space-x-2 lg:space-x-4">
-          {/* Tab Group */}
           <div className="flex items-center rounded-full p-1 bg-black/20 backdrop-blur-sm">
             {links.map((link) => (
               <a
@@ -64,31 +69,29 @@ const Navbar = () => {
               </a>
             ))}
           </div>
-
-          {/* Pre-order button */}
           <button className="ml-2 bg-green-600 hover:bg-green-700 text-white px-3 py-2 lg:px-4 lg:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors duration-200 shadow-md hover:shadow-lg">
             Pre-Order Now
           </button>
         </div>
 
         {/* Mobile Menu Button */}
-        <div className="md:hidden flex items-center z-60">
+        <div className="md:hidden flex items-center relative z-[60]">
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="p-2 rounded-md text-white bg-black/20 hover:bg-white/20 transition-all duration-300"
             aria-label="Toggle menu"
           >
             {isOpen ? (
-              <FiX className="w-5 h-5 sm:w-6 sm:h-6" />
+              <FiX className="w-6 h-6" />
             ) : (
-              <FiMenu className="w-5 h-5 sm:w-6 sm:h-6" />
+              <FiMenu className="w-6 h-6" />
             )}
           </button>
         </div>
 
         {/* Mobile Menu Overlay */}
         <div
-          className={`md:hidden fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity duration-300 z-50 ${
+          className={`md:hidden fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity duration-300 z-40 ${
             isOpen
               ? "opacity-100 pointer-events-auto"
               : "opacity-0 pointer-events-none"
@@ -121,7 +124,6 @@ const Navbar = () => {
                   </a>
                 ))}
               </div>
-
               <button className="mt-8 w-full bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-xl text-base font-medium transition-colors duration-200 shadow-md">
                 Pre-Order Now
               </button>
